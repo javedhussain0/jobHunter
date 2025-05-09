@@ -21,8 +21,8 @@ const Home = () => {
     <div>
       <Navbar />
       <HeroSection />
-      <CategoryCarousel />
-      <LatestJobs />
+       <CategoryCarousel />
+      <LatestJobs /> 
       <Footer />
     </div>
   )

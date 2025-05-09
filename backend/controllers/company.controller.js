@@ -74,7 +74,6 @@ export const updateCompany = async (req, res) => {
         const { name, description, website, location } = req.body;
  
         const file = req.file;
-        // idhar cloudinary ayega
         const fileUri = getDataUri(file);
         const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
         const logo = cloudResponse.secure_url;
@@ -98,3 +97,45 @@ export const updateCompany = async (req, res) => {
         console.log(error);
     }
 }
+export const rateCompany = async (req, res) => {
+    try {
+        const { companyId } = req.params;
+        const { rating, review } = req.body;
+        const studentId = req.user.id; // Get user ID from middleware
+
+        // Find the company
+        const company = await Company.findById(companyId);
+        if (!company) return res.status(404).json({ message: "Company not found" });
+
+        // Check if user has already rated
+        const existingReview = company.ratings.find(r => r.studentId.toString() === studentId);
+        if (existingReview) return res.status(400).json({ message: "You have already rated this company" });
+
+        // Add new rating
+        company.ratings.push({ studentId, rating, review });
+
+        // Calculate average rating
+        const totalRatings = company.ratings.length;
+        const totalScore = company.ratings.reduce((acc, curr) => acc + curr.rating, 0);
+        company.avgRating = totalScore / totalRatings;
+
+        await company.save();
+        res.status(201).json({ message: "Review added successfully", company });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+export const getCompanyReviews = async (req, res) => {
+    try {
+        const { companyId } = req.params;
+
+        const company = await Company.findById(companyId).populate("ratings.studentId", "name email");
+        if (!company) return res.status(404).json({ message: "Company not found" });
+
+        res.status(200).json(company.ratings);
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};

@@ -1,6 +1,8 @@
 import React from 'react'
 import { Badge } from './ui/badge'
 import { useNavigate } from 'react-router-dom'
+// import JobReviewForm from './JobReviewForm'
+// import JobReviewList from './JobReviewList'
 
 const LatestJobCards = ({job}) => {
     const navigate = useNavigate();
@@ -19,7 +21,8 @@ const LatestJobCards = ({job}) => {
                 <Badge className={'text-[#F83002] font-bold'} variant="ghost">{job?.jobType}</Badge>
                 <Badge className={'text-[#7209b7] font-bold'} variant="ghost">{job?.salary}LPA</Badge>
             </div>
-
+            {/* <JobReviewList jobId={job._id} />
+            <JobReviewForm jobId={job._id} fetchReviews={() => {}} /> */}
         </div>
     )
 }
